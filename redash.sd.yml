@@ -1,0 +1,31 @@
+description: Micros service template for Redash
+links:
+  binary:
+    name: redash
+    type: docker
+    tag: "latest"
+  healthcheck:
+    uri: /ping
+    port: 8080
+  #source:
+  #  url: 'https://stash.atlassian.com/projects/DATA/repos/redash-config'
+name: Redash Micros Service
+notifications:
+  email: analytics-integrations@atlassian.com
+organization: Analytics-and-Integration
+scaling:
+  min: 1
+  instance: t2.micro
+resources:
+- type: redis
+  name: redis
+- type: postgres-db
+  name: postgres
+#externalAccess: true
+#config:
+#  environmentVariables:
+#    IS_DOCKER: "true"
+#    REDASH_DATABASE_URL: "postgresql://redash:$REDASH_DATABASE_PW@atl-ai-redash-dev.cismxe8aykfq.us-east-1.rds.amazonaws.com:5432/redash"
+#    REDASH_REDIS_URL: "redis://$REDIS_MYCACHE_HOST:$REDIS_MYCACHE_PORT/0"
+#    REDASH_STATIC_ASSETS_PATH: "../rd_ui/dist/"
+#    REDASH_LOG_LEVEL: "INFO"
