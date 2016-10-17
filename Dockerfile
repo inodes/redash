@@ -1,4 +1,9 @@
 FROM ubuntu:trusty
+FROM nginx
+
+RUN mkdir -p /var/log/nginx/log && \
+    touch /var/log/nginx/log/access.log && \
+    touch /var/log/nginx/log/error.log
 
 # Ubuntu packages
 RUN apt-get update && \
@@ -15,9 +20,10 @@ RUN useradd --system --comment " " --create-home redash
 
 # Pip requirements for all data source types
 RUN pip install -U setuptools==23.1.0 && \
-  pip install supervisor==3.1.2
+    pip install supervisor==3.1.2
 
 COPY . /opt/redash/current
+
 RUN chown -R redash /opt/redash/current
 
 # Setting working directory
@@ -27,7 +33,7 @@ ENV REDASH_STATIC_ASSETS_PATH="../rd_ui/dist/"
 
 # Install project specific dependencies
 RUN pip install -r requirements_all_ds.txt && \
-  pip install -r requirements.txt
+    pip install -r requirements.txt
 
 RUN curl https://deb.nodesource.com/setup_4.x | bash - && \
   apt-get install -y nodejs && \
@@ -40,14 +46,16 @@ RUN curl https://deb.nodesource.com/setup_4.x | bash - && \
 # Setup supervisord
 RUN mkdir -p /opt/redash/supervisord && \
     mkdir -p /opt/redash/logs && \
-    cp /opt/redash/current/setup/docker/supervisord/supervisord.conf /opt/redash/supervisord/supervisord.conf
+    cp /opt/redash/current/setup/docker/supervisord/supervisord.conf /opt/redash/supervisord/supervisord.conf && \
+    cp /opt/redash/current/setup/docker/nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Fix permissions
 RUN chown -R redash /opt/redash
 
 # Expose ports
-EXPOSE 5000
-EXPOSE 9001
+EXPOSE 8080
 
 # Startup script
 CMD ["supervisord", "-c", "/opt/redash/supervisord/supervisord.conf"]
+
+#CMD ["/bin/bash"]
